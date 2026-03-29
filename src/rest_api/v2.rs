@@ -193,6 +193,7 @@ impl RestApiClientV2 {
         account_id: &str,
         accept_language: Option<&str>,
         before_lt: Option<i64>,
+        after_lt: Option<i64>,
         limit: u64,
         start_date: Option<i64>,
         end_date: Option<i64>,
@@ -201,6 +202,10 @@ impl RestApiClientV2 {
 
         if let Some(before_lt) = before_lt {
             params.insert("before_lt", before_lt);
+        }
+
+        if let Some(after_lt) = after_lt {
+            params.insert("after_lt", after_lt);
         }
 
         if let Some(start_date) = start_date {
