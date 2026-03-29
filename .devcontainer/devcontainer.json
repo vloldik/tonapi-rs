@@ -1,0 +1,32 @@
+{
+  "name": "Rust Dev Environment",
+  "build": {
+    "dockerfile": "Dockerfile"
+  },
+  "features": {
+  },
+  "runArgs": [
+    "--memory=10g",
+    "--runtime=runsc"
+  ],
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "lldb.executable": "/usr/bin/lldb",
+        "rust-analyzer.check.command": "clippy",
+        "remote.downloadExtensionsLocally": true,
+        "http.proxySupport": "off",
+        "editor.formatOnSave": true
+      },
+      "extensions": [
+        "rust-lang.rust-analyzer",
+        "mads-hartmann.bash-ide-vscode",
+        "streetsidesoftware.code-spell-checker",
+        "tamasfe.even-better-toml",
+        "waderyan.gitblame",
+        "github.vscode-github-actions"
+      ]
+    }
+  },
+  "remoteUser": "vscode"
+}
