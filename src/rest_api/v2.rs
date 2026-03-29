@@ -2696,7 +2696,7 @@ mod tests {
     async fn test_get_account_jettons_history_does_not_fail() {
         let client = RestApiClientV2::new(Network::Testnet, API_KEY);
         let result = client
-            .get_account_jettons_history(ACCOUNT_ID, None, None, 10, None, None)
+            .get_account_jettons_history(ACCOUNT_ID, None, None, None, 10, None, None)
             .await;
         assert!(result.is_ok());
     }

@@ -1,10 +1,10 @@
 use simple_logger::SimpleLogger;
-use tonapi::{AccountOperations, Network, WsApi};
+use tonapi_x::{AccountOperations, Network, WsApi};
 
 async fn subscribe_to_transactions(ws: &WsApi) -> Result<(), Box<dyn std::error::Error>> {
     let mut stream = ws.transactions_stream(Some(vec![AccountOperations {
         account: "-1:5555555555555555555555555555555555555555555555555555555555555555".to_string(),
-        operations: None
+        operations: None,
     }]));
 
     while let Ok(evt) = stream.next().await {

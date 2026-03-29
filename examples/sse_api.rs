@@ -1,5 +1,5 @@
 use simple_logger::SimpleLogger;
-use tonapi::{Network, SseApi};
+use tonapi_x::{Network, SseApi};
 
 async fn subscribe_to_transactions(sse: &SseApi) -> Result<(), Box<dyn std::error::Error>> {
     let mut stream = sse.transactions_stream(
