@@ -125,31 +125,100 @@ pub struct AccountEvent {
 }
 
 #[derive(Debug, Deserialize)]
+#[serde(tag = "type")]
+pub enum ActionDetails {
+    TonTransfer {
+        #[serde(rename = "TonTransfer")]
+        payload: TonTransferAction,
+    },
+    JettonTransfer {
+        #[serde(rename = "JettonTransfer")]
+        payload: JettonTransferAction,
+    },
+    JettonBurn {
+        #[serde(rename = "JettonBurn")]
+        payload: JettonBurnAction,
+    },
+    JettonMint {
+        #[serde(rename = "JettonMint")]
+        payload: JettonMintAction,
+    },
+    NftItemTransfer {
+        #[serde(rename = "NftItemTransfer")]
+        payload: NftItemTransferAction,
+    },
+    ContractDeploy {
+        #[serde(rename = "ContractDeploy")]
+        payload: ContractDeployAction,
+    },
+    Subscribe {
+        #[serde(rename = "Subscribe")]
+        payload: SubscriptionAction,
+    },
+    UnSubscribe {
+        #[serde(rename = "UnSubscribe")]
+        payload: UnSubscriptionAction,
+    },
+    AuctionBid {
+        #[serde(rename = "AuctionBid")]
+        payload: AuctionBidAction,
+    },
+    NftPurchase {
+        #[serde(rename = "NftPurchase")]
+        payload: NftPurchaseAction,
+    },
+    DepositStake {
+        #[serde(rename = "DepositStake")]
+        payload: DepositStakeAction,
+    },
+    WithdrawStake {
+        #[serde(rename = "WithdrawStake")]
+        payload: WithdrawStakeAction,
+    },
+    WithdrawStakeRequest {
+        #[serde(rename = "WithdrawStakeRequest")]
+        payload: WithdrawStakeRequestAction,
+    },
+    ElectionsDepositStake {
+        #[serde(rename = "ElectionsDepositStake")]
+        payload: ElectionsDepositStakeAction,
+    },
+    ElectionsRecoverStake {
+        #[serde(rename = "ElectionsRecoverStake")]
+        payload: ElectionsRecoverStakeAction,
+    },
+    JettonSwap {
+        #[serde(rename = "JettonSwap")]
+        payload: JettonSwapAction,
+    },
+    SmartContractExec {
+        #[serde(rename = "SmartContractExec")]
+        payload: SmartContractAction,
+    },
+    DomainRenew {
+        #[serde(rename = "DomainRenew")]
+        payload: DomainRenewAction,
+    },
+    InscriptionTransfer {
+        #[serde(rename = "InscriptionTransfer")]
+        payload: InscriptionTransferAction,
+    },
+    InscriptionMint {
+        #[serde(rename = "InscriptionMint")]
+        payload: InscriptionMintAction,
+    },
+    #[serde(other)]
+    Unknown,
+}
+
+#[derive(Debug, Deserialize)]
 pub struct Action {
-    pub r#type: ActionType,
+    pub action_type: ActionType,
     pub status: ActionStatus,
     pub simple_preview: ActionSimplePreview,
     pub base_transactions: Vec<String>,
-    pub ton_transfer: Option<TonTransferAction>,
-    pub contract_deploy: Option<ContractDeployAction>,
-    pub jetton_transfer: Option<JettonTransferAction>,
-    pub jetton_burn: Option<JettonBurnAction>,
-    pub jetton_mint: Option<JettonMintAction>,
-    pub nft_item_transfer: Option<NftItemTransferAction>,
-    pub subscribe: Option<SubscriptionAction>,
-    pub unsubscribe: Option<UnSubscriptionAction>,
-    pub auction_bid: Option<AuctionBidAction>,
-    pub nft_purchase: Option<NftPurchaseAction>,
-    pub deposit_stake: Option<DepositStakeAction>,
-    pub withdraw_stake: Option<WithdrawStakeAction>,
-    pub withdraw_stake_request: Option<WithdrawStakeRequestAction>,
-    pub elections_deposit_stake: Option<ElectionsDepositStakeAction>,
-    pub elections_recover_stake: Option<ElectionsRecoverStakeAction>,
-    pub jetton_swap: Option<JettonSwapAction>,
-    pub smart_contract_exec: Option<SmartContractAction>,
-    pub domain_renew: Option<DomainRenewAction>,
-    pub inscription_transfer: Option<InscriptionTransferAction>,
-    pub inscription_mint: Option<InscriptionMintAction>,
+    #[serde(flatten)]
+    pub details: ActionDetails,
 }
 
 #[derive(Debug, Deserialize)]
