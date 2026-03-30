@@ -213,7 +213,6 @@ pub enum ActionDetails {
 
 #[derive(Debug, Deserialize)]
 pub struct Action {
-    pub action_type: ActionType,
     pub status: ActionStatus,
     pub simple_preview: ActionSimplePreview,
     pub base_transactions: Vec<String>,
@@ -2011,4 +2010,130 @@ pub struct ParsedAddress {
 pub struct AddressFormat {
     pub b64: String,
     pub b64url: String,
+}
+
+#[cfg(test)]
+mod test {
+    use super::*;
+    use serde_json;
+
+    #[test]
+    fn test_deserialize_tonapi_events() {
+        let json_data = r#"
+        {
+          "events": [
+            {
+              "event_id": "7624312d8830e6b2fcd1c207b08e479f81de43416afb2339c5b433aaa12bb485",
+              "account": {
+                "address": "0:2ff56356b99666af033f23fee33d15dd8d74d266da1c008a7757dc7ab5a2f9bb",
+                "is_scam": false,
+                "is_wallet": true
+              },
+              "timestamp": 1774867630,
+              "actions": [
+                {
+                  "type": "TonTransfer",
+                  "status": "ok",
+                  "TonTransfer": {
+                    "sender": {
+                      "address": "0:43a13e4d92aee67ccbac50a1213bfd28fbd537a53e1e923acc954c22e9542b45",
+                      "is_scam": false,
+                      "is_wallet": true
+                    },
+                    "recipient": {
+                      "address": "0:2ff56356b99666af033f23fee33d15dd8d74d266da1c008a7757dc7ab5a2f9bb",
+                      "is_scam": false,
+                      "is_wallet": true
+                    },
+                    "amount": 100000000,
+                    "comment": "e87b34b7-803d-47dd-8b97-4d106edfb6e1"
+                  },
+                  "simple_preview": {
+                    "name": "Ton Transfer",
+                    "description": "Transferring 0.1 TON",
+                    "value": "0.1 TON",
+                    "accounts": [
+                      {
+                        "address": "0:43a13e4d92aee67ccbac50a1213bfd28fbd537a53e1e923acc954c22e9542b45",
+                        "is_scam": false,
+                        "is_wallet": true
+                      }
+                    ]
+                  },
+                  "base_transactions": [
+                    "fb78d7176227e9be1b92b92f881c274f8b0490b5cc77b25bb14644ce39e272fc"
+                  ]
+                }
+              ],
+              "is_scam": false,
+              "lt": 59685329000001,
+              "in_progress": false,
+              "extra": -396471,
+              "progress": 1,
+              "ext_msg_hash": "04f7ed2c128c3ea76d914d307b05568a71d5bea32145c7d294f8b47d92d8bbc9"
+            },
+            {
+              "event_id": "b98e56ff5b1f5c64965930439235fb4b940ee6d438587bbf6bda0449f675710d",
+              "account": { "address": "0:1", "is_scam": false, "is_wallet": true },
+              "timestamp": 12345678,
+              "actions": [
+                {
+                  "type": "ContractDeploy",
+                  "status": "ok",
+                  "ContractDeploy": {
+                    "address": "0:2ff56356b99666af033f23fee33d15dd8d74d266da1c008a7757dc7ab5a2f9bb",
+                    "interfaces": ["wallet_v4r2"]
+                  },
+                  "simple_preview": {
+                    "name": "Contract Deploy",
+                    "description": "Deploying...",
+                    "accounts": []
+                  },
+                  "base_transactions": ["tx123"]
+                }
+              ],
+              "is_scam": false, "lt": 1, "in_progress": false, "extra": 0, "progress": 1
+            }
+          ],
+          "next_from": 0
+        }
+        "#;
+
+        let result: Result<AccountEvents, serde_json::Error> = serde_json::from_str(json_data);
+
+        if let Err(ref e) = result {
+            panic!("Deserealization failed: {}", e);
+        }
+
+        let response = result.unwrap();
+
+        assert_eq!(response.events.len(), 2);
+        let event1 = &response.events[0];
+        assert_eq!(
+            event1.event_id,
+            "7624312d8830e6b2fcd1c207b08e479f81de43416afb2339c5b433aaa12bb485"
+        );
+
+        if let ActionDetails::TonTransfer { payload } = &event1.actions[0].details {
+            assert_eq!(payload.amount, 100000000);
+            assert_eq!(
+                payload.comment.as_ref().unwrap(),
+                "e87b34b7-803d-47dd-8b97-4d106edfb6e1"
+            );
+        } else {
+            panic!("TonTransfer expected");
+        }
+        let event2 = &response.events[1];
+        if let ActionDetails::ContractDeploy { payload } = &event2.actions[0].details {
+            assert_eq!(payload.interfaces[0], "wallet_v4r2");
+            assert_eq!(
+                payload.address,
+                "0:2ff56356b99666af033f23fee33d15dd8d74d266da1c008a7757dc7ab5a2f9bb"
+            );
+        } else {
+            panic!("ContractDeploy expected");
+        }
+
+        println!("Success!");
+    }
 }
