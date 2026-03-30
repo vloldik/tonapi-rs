@@ -738,7 +738,7 @@ pub struct Event {
     pub event_id: String,
     pub timestamp: i64,
     pub actions: Vec<Action>,
-    pub value_flow: Vec<ValueFlow>,
+    pub value_flow: Option<Vec<ValueFlow>>,
     pub is_scam: bool,
     pub lt: i64,
     pub in_progress: bool,
